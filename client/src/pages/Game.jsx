@@ -18,19 +18,19 @@ const Game = () => {
     }, 0);
   };
   return (
-    <div className="flex flex-col  items-center justify-center min-h-screen w-full ">
-      <div>
-        <header className="w-full text-[14px]">
-          Drag the ships to the grid, and then click to rotate:
-        </header>
-        <DndContext onDragEnd={onDragEnd}>
+    <DndContext onDragEnd={onDragEnd}>
+      <div className="flex flex-col  items-center justify-center min-h-screen w-full ">
+        <div>
+          <header className="w-full text-[14px]">
+            Drag the ships to the grid, and then click to rotate:
+          </header>
           <div className="flex gap-5">
             <Port />
             <Board />
           </div>
-        </DndContext>
+        </div>
       </div>
-    </div>
+    </DndContext>
   );
 };
 
