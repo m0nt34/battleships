@@ -1,60 +1,42 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
+import { useShips } from "../store/useShips";
 import Draggable from "./Draggable";
 import { useCurrentShip } from "../store/useCurrentShip";
-import { useShips } from "../store/useShips";
-
+import { handleSetCurrentShip,handleUnsetCurrentShip } from "../utils/handleSetCurrentShip";
 const Port = () => {
-  const { setShip } = useCurrentShip();
   const { ships } = useShips();
 
-  const onDragStart = (e) => {
-    const offsetX = e.nativeEvent.offsetX;
-    const offsetY = e.nativeEvent.offsetY;
-    const currShipObj = {
-      id: e.target.id,
-      horizontal: e.target.getAttribute("data-position") === "true",
-      left: Math.ceil(offsetX / 34),
-      top: Math.ceil(offsetY / 34),
-    };
-    
-    setShip(currShipObj);
-  };
+
   return (
-    <div className="flex gap-10">
-      <div className="flex flex-col h-[300px] w-[300px] justify-evenly">
-        {ships.map((shipSection, sectionIndex) => (
-          <section key={`section-${sectionIndex}`} className="flex relative">
-            {shipSection.ships.map((ship, i) => {
-              return (
-                !ship.inGame && (
-                  <Draggable
-                    key={ship.id}
+    <div className="flex relative flex-col justify-evenly h-[350px] w-[350px]">
+      {ships.map((shipsSection, i) => (
+        <section key={i} className="flex gap-2">
+          {shipsSection.ships.map(
+            (ship, j) =>
+              !ship.inGame && (
+                <Draggable
+                  key={`${i}-${j}`}
+                  id={ship.id}
+                  left={ship.shipLength * (35 + i * 5) * j}
+                >
+                  <div
                     id={ship.id}
-                    left={ship.shipLength * (32 + sectionIndex * 6) * i}
+                    onMouseDown={handleSetCurrentShip}
+                    onMouseUp={handleUnsetCurrentShip}
+                    className="h-[35px] bg-indigo-600 p-[2px] cursor-move"
+                    style={{
+                      width: 35 * ship.shipLength,
+                    }}
                   >
-                    <div
-                      draggable
-                      onDragStart={onDragStart}
-                      id={ship.id}
-                      data-position={ship.horizontal}
-                      className={`border-indigo-600 p-[2px] bg-indigo-600 h-[34px]`}
-                      style={{
-                        width: ship.shipLength * 34,
-                      }}
-                    >
-                      <div
-                        className="bg-indigo-100 h-[30px]"
-                      ></div>
-                    </div>
-                  </Draggable>
-                )
-              );
-            })}
-          </section>
-        ))}
-      </div>
+                    <div className="w-full h-full bg-indigo-100"></div>
+                  </div>
+                </Draggable>
+              )
+          )}
+        </section>
+      ))}
     </div>
   );
 };
 
-export default Port;
+export default memo(Port);

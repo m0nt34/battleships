@@ -1,36 +1,32 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Port from "../components/Port";
-
-import { DndContext } from "@dnd-kit/core";
 import Board from "../components/Board";
-import { useCurrentShip } from "../store/useCurrentShip";
+import { DndContext } from "@dnd-kit/core";
+
 const Game = () => {
-  const { setShip } = useCurrentShip();
-  const onDragEnd = (e) => {
-    const currShipObj = {
-      id: "",
-      horizontal: true,
-      left: "",
-      top: "",
-    };
+  const [dragging, setDragging] = useState(false);
+  const handleDragEnd = () => {
     setTimeout(() => {
-      setShip(currShipObj);
-    }, 0);
+      setDragging(false);
+    });
   };
+  const handleDrag = ()=>{
+    setDragging(true);
+  }
   return (
-    <DndContext onDragEnd={onDragEnd}>
-      <div className="flex flex-col  items-center justify-center min-h-screen w-full ">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full ">
+      <DndContext onDragEnd={handleDragEnd} onDragMove={handleDrag}>
         <div>
           <header className="w-full text-[14px]">
             Drag the ships to the grid, and then click to rotate:
           </header>
           <div className="flex gap-5">
             <Port />
-            <Board />
+            <Board dragging={dragging} />
           </div>
         </div>
-      </div>
-    </DndContext>
+      </DndContext>
+    </div>
   );
 };
 

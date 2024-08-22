@@ -1,115 +1,93 @@
-import React, { useRef, useState } from "react";
-import { useCurrentShip } from "../store/useCurrentShip";
-import { useShips } from "../store/useShips";
+import React, { useState } from "react";
+import { useDroppable } from "@dnd-kit/core";
 import Draggable from "./Draggable";
+import { useShips } from "../store/useShips";
+import { calculateCoordinates } from "../utils/calculateCoordinates";
 import {
-  placeShip,
-  calculateCooridnates,
-  pickupShip,
-} from "../utils/newBoardManipulations";
-import { inGameShipPosition } from "../utils/calculatestylization";
-import { getShipByID } from "../utils/getShipById";
-const Board = () => {
-  const { ship, setShip } = useCurrentShip();
-  const { ships, updateNestedShipById } = useShips();
-  const [board, setBoard] = useState(() =>
-    Array.from({ length: 10 }, () => Array(10).fill(0))
-  );
-  const boardRef = useRef(null);
-  
-  const handleMouseUp = (i, j) => {
-    var newBoard = placeShip(i, j, board, ship, true);
-    const currShip = getShipByID(ship.id);
+  handleSetCurrentShip,
+  handleUnsetCurrentShip,
+} from "../utils/handleSetCurrentShip";
+import { setShipStyle } from "../utils/setStyles";
+import { handleMouseUp } from "../utils/handleMouseUp";
+const Board = ({ dragging }) => {
 
-    if (newBoard) {
-      setBoard(newBoard);
-    } else if (currShip && currShip.top !== -1) {
-      newBoard = placeShip(currShip.top, currShip.left, board, ship, false);
-
-      if (newBoard) {
-        setBoard(newBoard);
-      }
-    }
-  };
-  const onDragStart = (e) => {
-    console.log(e.target);
-    
-    const offsetX = e.nativeEvent.offsetX;
-    const offsetY = e.nativeEvent.offsetY;
-    const currShipObj = {
-      id: e.target.id,
-      horizontal: e.target.getAttribute("data-position") === "true",
-      left: Math.ceil(offsetX / 34),
-      top: Math.ceil(offsetY / 34),
-    };
-    const currShip = getShipByID(currShipObj.id);
-
-    setBoard(
-      pickupShip(
-        board,
-        currShip.left,
-        currShip.top,
-        currShip.shipLength,
-        currShip.horizontal
-      )
-    );
-
-    setShip(currShipObj);
-  };
+  const [board, setBoard] = useState(Array(10).fill(Array(10).fill(0)));
+  const { ships } = useShips();
+  const { setNodeRef } = useDroppable({
+    id: "board",
+  });
   return (
-    <div className="relative">
-      <table className="relative w-[340px] h-[340px] z-10">
-        <tbody className="z-20">
+    <div>
+      <div
+        ref={setNodeRef}
+        className="relative w-full h-[351px]"
+        onMouseUp={async (e) => {
+          const { relativeY, relativeX } = calculateCoordinates(e);
+
+          const newBoard = await handleMouseUp(
+            relativeY,
+            relativeX,
+            board,
+            dragging
+          );
+          setBoard(newBoard);
+        }}
+      >
+        <table>
+          <tbody>
+            {board.map((column, i) => (
+              <tr key={i}>
+                {column.map((row, j) => (
+                  <td
+                    key={`${i}-${j}`}
+                    className="h-[35px] w-[35px] border border-[#7c7c7c]"
+                  ></td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {ships.map((shipsSection, i) => {
+          return shipsSection.ships.map((ship, j) => {
+            return (
+              ship.inGame && (
+                <Draggable
+                  key={`${i}-${j}`}
+                  id={ship.id}
+                  left={35 * ship.left}
+                  top={35 * ship.top}
+                >
+                  <div
+                    id={ship.id}
+                    className=" bg-indigo-600 p-[2px] cursor-move "
+                    style={setShipStyle(ship.horizontal, ship.shipLength)}
+                    onMouseDown={handleSetCurrentShip}
+                    onMouseUp={handleUnsetCurrentShip}
+                  >
+                    <div className="w-full h-full bg-indigo-100"></div>
+                  </div>
+                </Draggable>
+              )
+            );
+          });
+        })}
+      </div>
+      <table className="mt-10">
+        <tbody>
           {board.map((column, i) => (
-            <tr key={i} className="h-[34px] z-20">
+            <tr key={i}>
               {column.map((row, j) => (
                 <td
                   key={`${i}-${j}`}
-                  className={`z-20 w-[34px] h-[34px] border border-gray-400`}
-                ></td>
+                  className={`h-[35px] w-[35px] border border-[#7c7c7c] ${
+                    row > 0 ? "bg-blue-500" : row < 0 ? "bg-red-500" : ""
+                  }`}
+                >{row}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
-      <div
-        className="absolute top-0 w-[340px] h-[340px] z-50"
-        onMouseUp={(e) => {
-          const { top, left } = boardRef.current.getBoundingClientRect();
-          const { relativeX, relativeY } = calculateCooridnates(e, top, left);
-
-          handleMouseUp(relativeY, relativeX);
-        }}
-        ref={boardRef}
-      >
-        <div className="relative w-[340px] h-[340px]">
-          {ships.map((shipSection, sectionIndex) =>
-            shipSection.ships.map((ship) => {
-              return (
-                ship.inGame && (
-                  <Draggable key={ship.id} id={ship.id}>
-                    <div
-                      draggable
-                      onDragStart={onDragStart}
-                      id={ship.id}
-                      data-position={ship.horizontal}
-                      className={`absolute p-[2px] bg-indigo-600 z-[10]`}
-                      style={inGameShipPosition(
-                        ship.shipLength,
-                        ship.left,
-                        ship.top
-                      )}
-                    >
-                      <div className="bg-indigo-100 h-[30px]"></div>
-                    </div>
-                  </Draggable>
-                )
-              );
-            })
-          )}
-        </div>
-      </div>
-      
     </div>
   );
 };
