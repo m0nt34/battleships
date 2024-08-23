@@ -20,5 +20,5 @@ export const handleUnsetCurrentShip = () => {
   };
   setTimeout(() => {
     setShip(selectedShipObj);
-  }, 50);
+  });
 };

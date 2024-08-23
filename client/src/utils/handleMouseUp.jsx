@@ -3,7 +3,10 @@ import { checkIfCanPlace } from "./checkIfCanPlaceShip";
 import { placeShip, pickupShip } from "./boardManipulations";
 import { useCurrentShip } from "../store/useCurrentShip";
 import { useShips } from "../store/useShips";
-export const handleMouseUp = async (column, row, board, dragging) => {
+import { calculateCoordinates } from "./calculateCoordinates";
+import { useBoard } from "../store/useBoard";
+
+const handleMouseUp = async (column, row, board, dragging) => {
   const { ship } = useCurrentShip.getState();
   const { updateNestedShipById } = useShips.getState();
   var newBoard = board;
@@ -45,7 +48,6 @@ export const handleMouseUp = async (column, row, board, dragging) => {
     }
   } else if (ship.id !== "") {
     newBoard = await pickupShip(currShip.left, currShip.top, board, currShip);
-
     const updatedShipObj = {
       id: currShip.id,
       shipLength: currShip.shipLength,
@@ -55,7 +57,7 @@ export const handleMouseUp = async (column, row, board, dragging) => {
       top: calculatedTop,
     };
     if (
-      checkIfCanPlace(currShip.left, currShip.top, newBoard, updatedShipObj)
+      checkIfCanPlace(calculatedLeft, calculatedTop, newBoard, updatedShipObj)
     ) {
       newBoard = await placeShip(
         calculatedLeft,
@@ -63,6 +65,7 @@ export const handleMouseUp = async (column, row, board, dragging) => {
         newBoard,
         updatedShipObj
       );
+
       await updateNestedShipById(currShip.id, updatedShipObj);
       return newBoard;
     } else {
@@ -70,4 +73,10 @@ export const handleMouseUp = async (column, row, board, dragging) => {
     }
   }
   return board;
+};
+export const mainMouseUpFunction = async (e, dragging) => {
+  const { setBoard,board } = useBoard.getState();
+  const { relativeY, relativeX } = calculateCoordinates(e);
+  const newBoard = await handleMouseUp(relativeY, relativeX, board, dragging);
+  setBoard(newBoard);
 };

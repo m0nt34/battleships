@@ -13,7 +13,7 @@ const Draggable = ({ children, id, left, top = "" }) => {
   };
   return (
     <div
-      className="absolute"
+      className="absolute select-none"
       ref={setNodeRef}
       style={style}
       {...listeners}

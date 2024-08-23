@@ -1,28 +1,36 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Port from "../components/Port";
-import Board from "../components/Board";
+import Board from "../components/board/Board";
 import { DndContext } from "@dnd-kit/core";
-
+import { checkShipsOnBoard } from "../utils/CheckShipsOnBoard";
+import Ranks from "../components/tiles/Ranks";
+import Files from "../components/tiles/Files";
+import Buttons from "../components/Buttons";
 const Game = () => {
   const [dragging, setDragging] = useState(false);
   const handleDragEnd = () => {
     setTimeout(() => {
       setDragging(false);
     });
+    setTimeout(() => {
+      checkShipsOnBoard();
+    }, 200);
   };
-  const handleDrag = ()=>{
+  const handleDrag = () => {
     setDragging(true);
-  }
+  };
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full ">
       <DndContext onDragEnd={handleDragEnd} onDragMove={handleDrag}>
-        <div>
-          <header className="w-full text-[14px]">
-            Drag the ships to the grid, and then click to rotate:
-          </header>
-          <div className="flex gap-5">
-            <Port />
-            <Board dragging={dragging} />
+        <div className="flex gap-5">
+          <Port />
+          <div className="flex">
+            <Ranks />
+            <div className="flex flex-col">
+              <Files />
+              <Board dragging={dragging} />
+              <Buttons />
+            </div>
           </div>
         </div>
       </DndContext>
