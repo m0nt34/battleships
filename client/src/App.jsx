@@ -1,9 +1,12 @@
 import React from "react";
 import Game from "./pages/Game";
+import { SocketProvider } from "./context/SocketContext";
 function App() {
   return (
     <>
-      <Game />
+      <SocketProvider>
+        <Game />
+      </SocketProvider>
     </>
   );
 }

@@ -54,6 +54,7 @@ const handleMouseUp = async (column, row, board, dragging) => {
       horizontal: !currShip.horizontal,
       inGame: true,
       left: calculatedLeft,
+      
       top: calculatedTop,
     };
     if (
@@ -65,7 +66,6 @@ const handleMouseUp = async (column, row, board, dragging) => {
         newBoard,
         updatedShipObj
       );
-
       await updateNestedShipById(currShip.id, updatedShipObj);
       return newBoard;
     } else {

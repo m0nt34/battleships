@@ -6,6 +6,7 @@ import { checkShipsOnBoard } from "../utils/CheckShipsOnBoard";
 import Ranks from "../components/tiles/Ranks";
 import Files from "../components/tiles/Files";
 import Buttons from "../components/Buttons";
+import OpponentBoar from "../components/OpponentBoar";
 const Game = () => {
   const [dragging, setDragging] = useState(false);
   const handleDragEnd = () => {
@@ -26,10 +27,13 @@ const Game = () => {
           <Port />
           <div className="flex">
             <Ranks />
-            <div className="flex flex-col">
-              <Files />
-              <Board dragging={dragging} />
-              <Buttons />
+            <div className="flex gap-10">
+              <div className="flex flex-col">
+                <Files />
+                <Board dragging={dragging} myBoard={true} />
+                <Buttons />
+              </div>
+              <OpponentBoar />
             </div>
           </div>
         </div>
