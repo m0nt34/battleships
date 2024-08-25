@@ -25,7 +25,7 @@ const Board = ({ dragging = false, myBoard = true }) => {
           }
         }}
       >
-        <RenderBoard />
+        <RenderBoard myBoard={myBoard} />
         {myBoard && <Ships />}
       </div>
     </div>

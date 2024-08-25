@@ -1,36 +1,29 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000"); 
 
 const connectSocket = () => {
-  if (!socket.connected) {
-    socket.connect();
-  }
+    if (!socket.connected) {
+        socket.connect();
+    }
 };
 
 const disconnectSocket = () => {
-  if (socket.connected) {
-    socket.disconnect();
-  }
+    if (socket.connected) {
+        socket.disconnect();
+    }
 };
 
 const emitEvent = (eventName, data) => {
-  socket.emit(eventName, data);
+    socket.emit(eventName, data);
 };
 
 const listenToEvent = (eventName, callback) => {
-  socket.on(eventName, callback);
+    socket.on(eventName, callback);
 };
 
 const removeListener = (eventName) => {
-  socket.off(eventName);
+    socket.off(eventName);
 };
 
-export {
-  socket,
-  connectSocket,
-  disconnectSocket,
-  emitEvent,
-  listenToEvent,
-  removeListener,
-};
+export { socket, connectSocket, disconnectSocket, emitEvent, listenToEvent, removeListener };
