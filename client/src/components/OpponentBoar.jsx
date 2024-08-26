@@ -8,6 +8,11 @@ import useSocketStore from "../store/useSocketStore";
 import ThreeDotsLoadingIcon from "../assets/Icons/ThreeDotsLoadingIcon";
 import { useBoard } from "../store/useBoard";
 import { useOpponentBoard } from "../store/useOpponentShipPosition";
+import { useCurrentRoom } from "../store/useCurrentGameRoom";
+import { useMyTurn } from "../store/useMyTurn";
+import { useOpGuessBoard } from "../store/useOpGuessBoard";
+import { useMyGuessBoard } from "../store/useMyGueses";
+
 const OpponentBoar = () => {
   const { show } = usePort();
   const { gameStarted, setGameToTrue, setGameToFalse } = useGame();
@@ -15,6 +20,10 @@ const OpponentBoar = () => {
   const [loading, setLoading] = useState(false);
   const { emitEvent, listenToEvent, removeListener } = useSocketStore();
   const { board } = useBoard();
+  const { setCurrentRoom } = useCurrentRoom();
+  const { setMyTurn } = useMyTurn();
+  const { setOpGuessBoardToDefault } = useOpGuessBoard();
+  const { setMyGuessBoardToDefault } = useMyGuessBoard();
   const handleStartSearching = () => {
     setLoading(true);
     emitEvent("start-searching", board);
@@ -23,12 +32,16 @@ const OpponentBoar = () => {
     listenToEvent("room-assigned", (data) => {
       setGameToTrue();
       setOpBoard(data.opponentShips);
-      console.log("room asigned");
-      
+      setCurrentRoom(data.room);
+      setMyTurn(data.yourTurn);
     });
     listenToEvent("opponent-disconnected", (res) => {
       setGameToFalse();
       setLoading(false);
+      setCurrentRoom("");
+      setMyTurn(false);
+      setOpGuessBoardToDefault();
+      setMyGuessBoardToDefault();
       window.alert(res.message);
     });
     return () => {
@@ -49,7 +62,11 @@ const OpponentBoar = () => {
     ) : (
       <div className="flex h-full w-[380px] items-center justify-center">
         {loading ? (
-          <div>
+          <div className="flex flex-col relative">
+            <span className="absolute top-[-12px]  text-[19px]">
+
+            Searching...
+            </span>
             <ThreeDotsLoadingIcon />
           </div>
         ) : (

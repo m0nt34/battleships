@@ -25,19 +25,39 @@ io.on("connection", (socket) => {
 
       const room = `${user1.id}-${user2.id}`;
       socket.join(room);
-      rooms[room] = { user1, user2 };
+      rooms[room] = { user1, user2, currentTurn: user1.id };
 
       io.to(user1.id).emit("room-assigned", {
         room,
         opponentShips: user2.shipPosition,
+        yourTurn: true,
       });
       io.to(user2.id).emit("room-assigned", {
         room,
         opponentShips: user1.shipPosition,
+        yourTurn: false,
       });
     }
   });
+  socket.on("make-move", (data) => {
+    const { room, move, hit } = data;
+    const currentRoom = rooms[room];
 
+    if (currentRoom) {
+      const { user1, user2, currentTurn } = currentRoom;
+
+      if (currentTurn === socket.id) {
+        const opponentId = currentTurn === user1.id ? user2.id : user1.id;
+        io.to(opponentId).emit("opponent-move", { move });
+
+        if (!hit) {
+          currentRoom.currentTurn = opponentId;
+          io.to(socket.id).emit("your-turn", { yourTurn: false });
+          io.to(opponentId).emit("your-turn", { yourTurn: true });
+        }
+      }
+    }
+  });
   socket.on("disconnect", () => {
     console.log(`${socket.id} disconnected`);
 

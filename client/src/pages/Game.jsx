@@ -21,7 +21,7 @@ const Game = () => {
     setDragging(true);
   };
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full ">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full select-none">
       <DndContext onDragEnd={handleDragEnd} onDragMove={handleDrag}>
         <div className="flex gap-5">
           <Port />
