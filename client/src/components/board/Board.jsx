@@ -10,11 +10,13 @@ import useSocketStore from "../../store/useSocketStore";
 import { useCurrentRoom } from "../../store/useCurrentGameRoom";
 import { guess } from "../../utils/guess";
 import { opponentGuess } from "../../utils/OpponentGuess";
+import { useLoading } from "../../store/useLoading";
 const Board = ({ dragging = false, myBoard = true }) => {
   const { gameStarted } = useGame();
   const { myTurn, setMyTurn } = useMyTurn();
   const { emitEvent, listenToEvent, removeListener } = useSocketStore();
   const { currentRoom } = useCurrentRoom();
+  const { loading } = useLoading();
   const { setNodeRef } = useDroppable({
     id: "board",
   });
@@ -56,7 +58,7 @@ const Board = ({ dragging = false, myBoard = true }) => {
         ref={setNodeRef}
         className="relative w-full h-[351px]"
         onMouseUp={(e) => {
-          if (myBoard && !gameStarted) {
+          if (myBoard && !gameStarted && !loading) {
             mainMouseUpFunction(e, dragging);
           } else {
             if (myTurn) {

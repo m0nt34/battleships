@@ -12,12 +12,13 @@ import { useCurrentRoom } from "../store/useCurrentGameRoom";
 import { useMyTurn } from "../store/useMyTurn";
 import { useOpGuessBoard } from "../store/useOpGuessBoard";
 import { useMyGuessBoard } from "../store/useMyGueses";
+import { useLoading } from "../store/useLoading";
 
 const OpponentBoar = () => {
   const { show } = usePort();
   const { gameStarted, setGameToTrue, setGameToFalse } = useGame();
   const { setOpBoard } = useOpponentBoard();
-  const [loading, setLoading] = useState(false);
+  const { loading, setLoading } = useLoading();
   const { emitEvent, listenToEvent, removeListener } = useSocketStore();
   const { board } = useBoard();
   const { setCurrentRoom } = useCurrentRoom();
@@ -64,8 +65,7 @@ const OpponentBoar = () => {
         {loading ? (
           <div className="flex flex-col relative">
             <span className="absolute top-[-12px]  text-[19px]">
-
-            Searching...
+              Searching...
             </span>
             <ThreeDotsLoadingIcon />
           </div>

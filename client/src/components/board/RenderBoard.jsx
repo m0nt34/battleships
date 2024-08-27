@@ -8,8 +8,6 @@ import Dot from "../../assets/Icons/Dot";
 const RenderBoard = ({ myBoard }) => {
   const { myGuessBoard } = useMyGuessBoard();
   const { opGuessBoard } = useOpGuessBoard();
-  const { OpBoard } = useOpponentBoard();
-  const { board } = useBoard();
   return (
     <table>
       <tbody>
