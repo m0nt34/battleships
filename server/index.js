@@ -5,7 +5,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://battleships-z8bh.onrender.com",
+    origin: [
+      "https://battleshipsprj.netlify.app/",
+      "https://battleships-z8bh.onrender.com",
+    ],
     credentials: true,
   },
 });
