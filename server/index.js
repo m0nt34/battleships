@@ -6,10 +6,10 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "https://battleshipsprj.netlify.app",
+      "https://battleships-multiplayer.netlify.app",
       "https://battleships-z8bh.onrender.com",
       "http://localhost:5173",
-   ],
+    ],
     credentials: true,
   },
 });
